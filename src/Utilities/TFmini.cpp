@@ -34,6 +34,7 @@ int main(int argc, char **argv)
       TFmini_range.range = dist;
       TFmini_range.header.stamp = ros::Time::now();
       pub_range.publish(TFmini_range);
+      // std::cout << "Height: " << dist*100 << " [cm]" << std::endl;
     }
     else if(dist == -1.0)
     {
