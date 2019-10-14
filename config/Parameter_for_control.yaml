@@ -55,11 +55,11 @@ Limit:
   vz_error_max: 10.0
   pxy_int_max : 10.0
   pz_int_max : 10.0
-  tilt_max: 20.0
+  tilt_max: 5.0
   int_start_error: 10.0
 
-  XY_VEL_MAX : 10.0
-  Z_VEL_MAX : 10.0 
+  XY_VEL_MAX : 0.8
+  Z_VEL_MAX : 0.8 
 
 # 位置环参数 - cascade pid
 Pos_cascade_pid:
