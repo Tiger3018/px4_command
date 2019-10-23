@@ -157,6 +157,14 @@ add_executable(collision_avoidance src/Application/collision_avoidance.cpp)
 add_dependencies(collision_avoidance px4_command_gencpp)
 target_link_libraries(collision_avoidance ${catkin_LIBRARIES})
 
+add_executable(collision_avoidance_vfh src/Application/collision_avoidance_vfh.cpp)
+add_dependencies(collision_avoidance_vfh px4_command_gencpp)
+target_link_libraries(collision_avoidance_vfh ${catkin_LIBRARIES})
+
+add_executable(collision_avoidance_matlabvfh src/Application/collision_avoidance_matlabvfh.cpp)
+add_dependencies(collision_avoidance_matlabvfh px4_command_gencpp)
+target_link_libraries(collision_avoidance_matlabvfh ${catkin_LIBRARIES})
+
 add_executable(collision_avoidance_streo src/Application/collision_avoidance_streo.cpp)
 add_dependencies(collision_avoidance_streo px4_command_gencpp)
 target_link_libraries(collision_avoidance_streo ${catkin_LIBRARIES})
