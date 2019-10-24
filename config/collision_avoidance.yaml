@@ -1,10 +1,10 @@
 ##Parameter for collision_avoidance.cpp
 
 ##  期望位置_x;
-target_x : 8
+target_x : 5
 
 ## 期望位置_y
-target_y : 8
+target_y : 0
 
 ##追踪部分位置环P
 p_xy : 0.5
