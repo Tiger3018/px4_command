@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(px4_command)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -168,6 +168,10 @@ target_link_libraries(payload_drop ${catkin_LIBRARIES})
 add_executable(formation_control_sitl src/Application/formation_control_sitl.cpp)
 add_dependencies(formation_control_sitl px4_command_gencpp)
 target_link_libraries(formation_control_sitl ${catkin_LIBRARIES})
+
+add_executable(collision_avoidance_vfh_node src/Application/collision_avoidance_vfh.cpp)
+add_dependencies(collision_avoidance_vfh_node px4_command_gencpp)
+target_link_libraries(collision_avoidance_vfh_node ${catkin_LIBRARIES})
 
 
 #############

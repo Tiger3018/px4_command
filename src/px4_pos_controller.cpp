@@ -173,9 +173,9 @@ int main(int argc, char **argv)
 
     // 选择控制律
     int switch_ude;
-    cout << "Please choose the controller: 0 for cascade_PID, 1 for PID, 2 for UDE, 3 for passivity, 4 for NE: "<<endl;
-    cin >> switch_ude;
-
+ //   cout << "Please choose the controller: 0 for cascade_PID, 1 for PID, 2 for UDE, 3 for passivity, 4 for NE: "<<endl;
+//    cin >> switch_ude;
+	switch_ude = 0;
     if(switch_ude == 0)
     {
         pos_controller_cascade_pid.printf_param();
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
     // 圆形轨迹追踪类
     Circle_Trajectory _Circle_Trajectory;
     float time_trajectory = 0.0;
-    _Circle_Trajectory.printf_param();
+ //   _Circle_Trajectory.printf_param();
 
     printf_param();
 
