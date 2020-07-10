@@ -171,8 +171,9 @@ target_link_libraries(formation_control_sitl ${catkin_LIBRARIES})
 
 add_executable(collision_avoidance_vfh_node src/Application/collision_avoidance_vfh.cpp)
 add_dependencies(collision_avoidance_vfh_node px4_command_gencpp)
-target_link_libraries(collision_avoidance_vfh_node ${catkin_LIBRARIES})
-
+target_link_libraries(collision_avoidance_vfh_node
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

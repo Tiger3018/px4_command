@@ -50,7 +50,7 @@ float sector_scale;
 Point2D Uavp;
 vector<float> map_cv;
 vector<double> ranges;
-float desire_z = 0.7; //期望高度
+float desire_z = 1.0; //期望高度
 
 uint32_t init_mask = 0;
 Eigen::Vector3d vel_sp_body;                                           
@@ -184,7 +184,7 @@ float CalculDirection(Point2D& goal) {
 		else
 		{
 			if (mesh[j] + mesh[j + 1] == 0)
-				cand_dir.push_back((j + 1)*sector_value);//寻找安全角度，机体坐标系下即确定波谷
+				cand_dir.push_back((j + 1)*sector_value);//寻找安全角度，机体坐标系下；即确定波谷
 		}
 	}
 
@@ -268,8 +268,8 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "collision_avoidance_vfh");
     ros::NodeHandle nh("~");
-	scan_distance_max = 2.1;
-	scan_distance_min = 0.1;
+	scan_distance_max = 4.1;
+	scan_distance_min = 0.2;
 	angle_resolution = 1.0;
     heading = 90;
 	sector_value = 30;
@@ -402,7 +402,7 @@ while (ros::ok())
 					pos_target.type_mask = 1 + 2 + /*4 + 8 + 16 + 32 +*/ 64 + 128 + 256 + 512 + 1024 + 2048;
 					pos_target.velocity.x = 0.5* cos(arc);
 					pos_target.velocity.y = 0.5* sin(arc);
-					pos_target.position.z = 0.7;
+					pos_target.position.z = desire_z;
 					local_pos_pub.publish(pos_target);
 
 					ros::Time last_request = ros::Time::now();
@@ -444,7 +444,7 @@ while (ros::ok())
 					pos_target.type_mask = 1 + 2 +/* 4 + 8 + 16 + 32 +*/ 64 + 128 + 256 + 512 + 1024 + 2048;
 					pos_target.velocity.x = 0;
 					pos_target.velocity.y = 0;
-					pos_target.position.z = 0.7;
+					pos_target.position.z = 1.0;
  					local_pos_pub.publish(pos_target);
 				}
 			}
@@ -455,7 +455,7 @@ while (ros::ok())
 		pos_target.type_mask = 1 + 2 + /*4 + 8 + 16 + 32 +*/ 64 + 128 + 256 + 512 + 1024 + 2048;
 		pos_target.velocity.x = 0;
 		pos_target.velocity.y = 0;
-		pos_target.position.z = 0.7;
+		pos_target.position.z = desire_z;
 		local_pos_pub.publish(pos_target);
 
 		printf("task over\n");
