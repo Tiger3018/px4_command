@@ -50,6 +50,7 @@ float sector_scale;
 Point2D Uavp;
 vector<float> map_cv;
 vector<double> ranges;
+
 float desire_z = 1.0; //期望高度
 
 uint32_t init_mask = 0;
@@ -292,8 +293,10 @@ ros::Publisher local_pos_pub = nh.advertise<mavros_msgs::PositionTarget>("/mavro
 		ros::spinOnce();
 		rate.sleep();
 	}
-    printf("Please set the waypoint in QGC before running this program.\n");
+  
+  printf("Please set the waypoint in QGC before running this program.\n");
 	printf("wait a moment\n");
+
 	while (ros::ok())
 	{
 		//7F ‭0111 1111‬
@@ -444,7 +447,7 @@ while (ros::ok())
 					pos_target.type_mask = 1 + 2 +/* 4 + 8 + 16 + 32 +*/ 64 + 128 + 256 + 512 + 1024 + 2048;
 					pos_target.velocity.x = 0;
 					pos_target.velocity.y = 0;
-					pos_target.position.z = 1.0;
+					pos_target.position.z = desire_z;
  					local_pos_pub.publish(pos_target);
 				}
 			}
