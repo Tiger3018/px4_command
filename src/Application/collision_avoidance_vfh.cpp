@@ -50,7 +50,8 @@ float sector_scale;
 Point2D Uavp;
 vector<float> map_cv;
 vector<double> ranges;
-float desire_z = 1.5; //期望高度
+
+float desire_z = 1.0; //期望高度
 
 uint32_t init_mask = 0;
 Eigen::Vector3d vel_sp_body;                                           
@@ -268,19 +269,19 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "collision_avoidance_vfh");
     ros::NodeHandle nh("~");
-	scan_distance_max = 2.1;
-	scan_distance_min = 0.05;
+	scan_distance_max = 4.1;
+	scan_distance_min = 0.2;
 	angle_resolution = 1.0;
     heading = 90;
-	sector_value = 15;
-	sector_scale = 5;
+	sector_value = 30;
+	sector_scale = 10;
 	Uavp.x = 0;
 	Uavp.y = 0;
 
     ros::Subscriber gps_sub = nh.subscribe("/mavros/global_position/global",100,gps_cb);
     ros::Subscriber state_sub = nh.subscribe<mavros_msgs::State>("/mavros/state", 100, state_cb);
     ros::Subscriber local_pos_sub = nh.subscribe<geometry_msgs::PoseStamped>("/mavros/local_position/pose", 100, local_pos_cb);
-    ros::Subscriber lidar_sub = nh.subscribe<sensor_msgs::LaserScan>("/laser/scan", 100, scan_cb);
+    ros::Subscriber lidar_sub = nh.subscribe<sensor_msgs::LaserScan>("/scan", 100, scan_cb);
     ros::Subscriber waypoint_sub = nh.subscribe<mavros_msgs::WaypointList>("/mavros/mission/waypoints", 100, waypoints_cb);
     ros::Subscriber homePos_sub = nh.subscribe<mavros_msgs::HomePosition>("/mavros/home_position/home", 100, home_pos_cb);
     ros::Subscriber head_sub = nh.subscribe<std_msgs::Float64>("/mavros/global_position/compass_hdg", 100, heading_cb);
@@ -292,6 +293,9 @@ ros::Publisher local_pos_pub = nh.advertise<mavros_msgs::PositionTarget>("/mavro
 		ros::spinOnce();
 		rate.sleep();
 	}
+  
+  printf("Please set the waypoint in QGC before running this program.\n");
+	printf("wait a moment\n");
 
 	while (ros::ok())
 	{
@@ -399,8 +403,8 @@ while (ros::ok())
 					mavros_msgs::PositionTarget pos_target;
 					pos_target.coordinate_frame = 1;
 					pos_target.type_mask = 1 + 2 + /*4 + 8 + 16 + 32 +*/ 64 + 128 + 256 + 512 + 1024 + 2048;
-					pos_target.velocity.x = 0.5 ;
-					pos_target.velocity.y = 0.5;
+					pos_target.velocity.x = 0.5* cos(arc);
+					pos_target.velocity.y = 0.5* sin(arc);
 					pos_target.position.z = desire_z;
 					local_pos_pub.publish(pos_target);
 

@@ -23,7 +23,7 @@ disturbance_end_time : 30.0
 
 ## parameter for px4_pos_estimator.cpp
 pos_estimator:
-  ## 使用激光SLAM数据orVicon数据 0 for vicon， 1 for 激光SLAM
+  ## 使用激光SLAM数据or vio数据 0 for vio， 1 for 激光SLAM
   flag_use_laser_or_vicon : 0
   ## 0 for use the data from fcu, 1 for use the mocap raw data(only position), 2 for use the mocap raw data(position and velocity)
   Use_mocap_raw : 0
@@ -55,22 +55,22 @@ Limit:
   vz_error_max: 10.0
   pxy_int_max : 10.0
   pz_int_max : 10.0
-  tilt_max: 20.0
+  tilt_max: 5.0
   int_start_error: 10.0
 
-  XY_VEL_MAX : 10.0
-  Z_VEL_MAX : 10.0 
+  XY_VEL_MAX : 0.8
+  Z_VEL_MAX : 0.8 
 
 # 位置环参数 - cascade pid
 Pos_cascade_pid:
    Kp_xy : 0.95
-   Kp_z : 1.0
+   Kp_z : 2.5
    Kp_vxvy : 0.09
    Kp_vz : 0.2
    Ki_vxvy : 0.02
-   Ki_vz : 0.02
+   Ki_vz : 0.04
    Kd_vxvy : 0.01
-   Kd_vz : 0.0
+   Kd_vz : 0.05
    Hover_throttle : 0.4
    MPC_VELD_LP: 5.0
 
