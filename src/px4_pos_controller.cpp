@@ -86,16 +86,17 @@ void Command_cb(const px4_command::ControlCommand::ConstPtr& msg)
 {
     Command_Now = *msg;
     
-    // 无人机一旦接受到Land指令，则会屏蔽其他指令
+    // 无人机一旦接受到Land指令，则会屏蔽其他指令(reverted)
     if(Command_Last.Mode == command_to_mavros::Land)
     {
-        Command_Now.Mode = command_to_mavros::Land;
+        // Command_Now.Mode = command_to_mavros::Land;
     }
 
     // Check for geo fence: If drone is out of the geo fence, it will land now.
     if(check_failsafe() == 1)
     {
         Command_Now.Mode = command_to_mavros::Land;
+        cout << "!!Out of GEO FENCE!!" << endl;
     }
 }
 
@@ -173,8 +174,8 @@ int main(int argc, char **argv)
 
     // 选择控制律
     int switch_ude;
- //   cout << "Please choose the controller: 0 for cascade_PID, 1 for PID, 2 for UDE, 3 for passivity, 4 for NE: "<<endl;
-//    cin >> switch_ude;
+    cout << "Please choose the controller: 0 for cascade_PID, 1 for PID, 2 for UDE, 3 for passivity, 4 for NE: "<<endl;
+    // cin >> switch_ude;
 	switch_ude = 0;
     if(switch_ude == 0)
     {
@@ -221,7 +222,7 @@ int main(int argc, char **argv)
     // Set the takeoff position
     Takeoff_position[0] = _DroneState.position[0];
     Takeoff_position[1] = _DroneState.position[1];
-    Takeoff_position[2] = _DroneState.position[2];
+    Takeoff_position[2] = _DroneState.position[2]; // will be used later
 
     // NE控制律需要设置起飞初始值
     if(switch_ude == 4)
@@ -261,6 +262,13 @@ int main(int argc, char **argv)
         //执行回调函数
         ros::spinOnce();
 
+        if(Command_Now.Mode == command_to_mavros :: Takeoff && Command_Last.Mode != Command_Now.Mode)
+        {
+            Takeoff_position[0] = _DroneState.position[0];
+            Takeoff_position[1] = _DroneState.position[1];
+            Takeoff_position[2] = _DroneState.position[2]; // will be used later
+        }
+
         switch (Command_Now.Mode)
         {
         // 【Idle】 怠速旋转，此时可以切入offboard模式，但不会起飞。
@@ -268,7 +276,7 @@ int main(int argc, char **argv)
             _command_to_mavros.idle();
             break;
 
-        // 【Takeoff】 从摆放初始位置原地起飞至指定高度，偏航角也保持当前角度
+        // 【Takeoff】 从当前位置起飞（目前，无检测）至指定高度，偏航角也保持当前角度
         case command_to_mavros::Takeoff:
             Command_to_gs.Mode = Command_Now.Mode;
             Command_to_gs.Command_ID = Command_Now.Command_ID;
@@ -757,10 +765,10 @@ int main(int argc, char **argv)
             // 打印位置控制器中间计算量
             if(switch_ude == 0)
             {
-                pos_controller_cascade_pid.printf_result();
+                pos_controller_cascade_pid.printf_result(_ControlOutput);
             }else if(switch_ude == 1)
             {
-                pos_controller_pid.printf_result();
+                pos_controller_pid.printf_result(_ControlOutput);
             }else if(switch_ude == 2)
             {
                 pos_controller_ude.printf_result();

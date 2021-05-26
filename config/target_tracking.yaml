@@ -7,9 +7,9 @@ kpz_track : 0.8
 
 ##追踪算法最大追踪速度
 ##取决与使用场景，室内或者第一次实验时，建议选小一点
-track_max_vel_x : 0.5
-track_max_vel_y : 0.5
-track_max_vel_z : 0.5
+track_max_vel_x : 0.2
+track_max_vel_y : 0.2
+track_max_vel_z : 0.2
 
 ##追踪算法速度死区
 track_thres_vel_x : 0.05
@@ -26,7 +26,7 @@ count_vision_lost : 10
 delta_x : 1.5
 
 ##追踪距离阈值
-distance_thres: 0.4
+distance_thres: 0.001
 
 
 

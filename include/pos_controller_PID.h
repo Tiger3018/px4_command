@@ -83,7 +83,7 @@ class pos_controller_PID
         //Printf the PID parameter
         void printf_param();
 
-        void printf_result();
+        void printf_result(px4_command::ControlOutput);
 
         // Position control main function 
         // [Input: Current state, Reference state, sub_mode, dt; Output: AttitudeReference;]
@@ -112,6 +112,7 @@ px4_command::ControlOutput pos_controller_PID::pos_controller(
     {
         pos_error[i] = constrain_function(pos_error[i], pos_error_max[i]);
         vel_error[i] = constrain_function(vel_error[i], vel_error_max[i]);
+        // cerr << pos_error[i] << " " << vel_error[i] << endl;
     }
 
     // 期望加速度 = 加速度前馈 + PID
@@ -161,11 +162,12 @@ px4_command::ControlOutput pos_controller_PID::pos_controller(
         _ControlOutput.Throttle[i] = throttle_sp[i];
     }
 
+    // printf_result(_ControlOutput);
     return _ControlOutput;
 
 }
 
-void pos_controller_PID::printf_result()
+void pos_controller_PID::printf_result(px4_command::ControlOutput cop)
 {
     cout <<">>>>>>>>>>>>>>>>>>>>>>  PID Position Controller  <<<<<<<<<<<<<<<<<<<<<<" <<endl;
 
@@ -179,6 +181,8 @@ void pos_controller_PID::printf_result()
     cout.setf(ios::showpos);
 
     cout<<setprecision(2);
+    cout << "thrust_sp    [X Y Z] : " << cop.Thrust[0] << " [m/s^2] "<< cop.Thrust[1]<<" [m/s^2] "<<cop.Thrust[2]<<" [m/s^2] "<<endl;
+    cout << "Throttle     [X Y Z] : " << cop.Throttle[0] << " [m/s^2] "<< cop.Throttle[1]<<" [m/s^2] "<<cop.Throttle[2]<<" [m/s^2] "<<endl;
 }
 
 // 【打印参数函数】

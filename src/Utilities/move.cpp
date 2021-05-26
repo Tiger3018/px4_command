@@ -37,6 +37,7 @@ int main(int argc, char **argv)
     //input
     while(ros::ok())
     {
+        move_pub = nh.advertise<px4_command::ControlCommand>("/px4_command/control_command", 10);
         switch (Num_StateMachine)
         {
             // input
@@ -176,6 +177,7 @@ int main(int argc, char **argv)
             Command_Now.header.stamp = ros::Time::now();
             Command_Now.Mode = command_to_mavros::Idle;
             move_pub.publish(Command_Now);
+            move_pub.shutdown();
             Num_StateMachine = 0;
             break;
 

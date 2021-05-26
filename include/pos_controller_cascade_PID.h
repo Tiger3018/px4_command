@@ -125,7 +125,7 @@ class pos_controller_cascade_PID
         void printf_param();
 
         //Printf the control result
-        void printf_result();
+        void printf_result(px4_command::ControlOutput);
 
         // Position control main function 
         // [Input: Current state, Reference state, _Reference_State.Sub_mode, dt; Output: AttitudeReference;]
@@ -153,14 +153,15 @@ px4_command::ControlOutput pos_controller_cascade_PID::pos_controller
 
     _positionController(_DroneState, _Reference_State, vel_setpoint);
 
-    Eigen::Vector3d thrust_sp;
+    // Eigen::Vector3d thrust_sp;
 
     _velocityController(_DroneState, _Reference_State, delta_time, thrust_sp);
 
-    _ControlOutput.Throttle[0] = thrust_sp[0];
+    _ControlOutput.Throttle[0] = pos_controller_cascade_PID::thrust_sp[0];
     _ControlOutput.Throttle[1] = thrust_sp[1];
     _ControlOutput.Throttle[2] = thrust_sp[2];
 
+    // printf_result(_ControlOutput);
     return _ControlOutput;
 }
 
@@ -322,7 +323,7 @@ void pos_controller_cascade_PID::cal_vel_error_deriv(const Eigen::Vector3d& erro
 }
 
 
-void pos_controller_cascade_PID::printf_result()
+void pos_controller_cascade_PID::printf_result(px4_command::ControlOutput cop)
 {
     cout <<">>>>>>>>>>>>>>>>>>>  cascade PID Position Controller <<<<<<<<<<<<<<<<<<" <<endl;
 
@@ -347,7 +348,9 @@ void pos_controller_cascade_PID::printf_result()
 
     // cout << "Vel_D_output [X Y Z] : " << vel_D_output[0] << " [m/s] "<< vel_D_output[1]<<" [m/s] "<<vel_D_output[2]<<" [m/s] "<<endl;
 
-    cout << "thrust_sp    [X Y Z] : " << thrust_sp[0] << " [m/s^2] "<< thrust_sp[1]<<" [m/s^2] "<<thrust_sp[2]<<" [m/s^2] "<<endl;
+    // cout << "thrust_sp    [X Y Z] : " << thrust_sp[0] << " [m/s^2] "<< thrust_sp[1]<<" [m/s^2] "<<thrust_sp[2]<<" [m/s^2] "<<endl;
+    cout << "thrust_sp    [X Y Z] : " << cop.Thrust[0] << " [m/s^2] "<< cop.Thrust[1]<<" [m/s^2] "<<cop.Thrust[2]<<" [m/s^2] "<<endl;
+    cout << "Throttle     [X Y Z] : " << cop.Throttle[0] << " [m/s^2] "<< cop.Throttle[1]<<" [m/s^2] "<<cop.Throttle[2]<<" [m/s^2] "<<endl;
 }
 
 // 【打印参数函数】

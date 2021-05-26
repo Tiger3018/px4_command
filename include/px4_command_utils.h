@@ -74,6 +74,7 @@ void printf_command_control(const px4_command::ControlCommand& _ControlCommand)
         case command_to_mavros::Move_Body:
             cout << "Command: [ Move_Body ] " <<endl;
             cout << "Position_Ref [X Y Z] : " << _ControlCommand.Reference_State.position_ref[0] << " [ m ] "<< _ControlCommand.Reference_State.position_ref[1]<<" [ m ] "<< _ControlCommand.Reference_State.position_ref[2]<<" [ m ] "<<endl;
+            cout << "Velocity_Ref [X Y Z] : " << _ControlCommand.Reference_State.velocity_ref[0] << " [ m ] "<< _ControlCommand.Reference_State.velocity_ref[1]<<" [ m ] "<< _ControlCommand.Reference_State.velocity_ref[2]<<" [ m ] "<<endl;
             cout << "Yaw_Ref : "  << _ControlCommand.Reference_State.yaw_ref* 180/M_PI << " [deg] " <<endl;
             break;
 
@@ -111,7 +112,7 @@ void printf_command_control(const px4_command::ControlCommand& _ControlCommand)
 // 打印无人机状态
 void prinft_drone_state(const px4_command::DroneState& _Drone_state)
 {
-    cout <<">>>>>>>>>>>>>>>>>>>>>>>>   Drone State   <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" <<endl;
+    cout <<"******>>>>>>>>>>>>>>>>>>   Drone State   <<<<<<<<<<<<<<<<<<<<<<<<******" <<endl;
 
     //固定的浮点显示
     cout.setf(ios::fixed);

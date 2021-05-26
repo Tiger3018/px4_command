@@ -58,17 +58,23 @@ void printf_result();                                                           
 void generate_com(int sub_mode, float state_desired[4]);
 float satfunc(float data, float Max, float Thres);                                   //限幅函数
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>回 调 函 数<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-void vision_cb(const geometry_msgs::Pose::ConstPtr &msg)
+void vision_cb(const geometry_msgs::PoseStamped::ConstPtr &msg)
 {
-    pos_target = *msg;
+    static double wcat;
+    pos_target = msg -> pose;
+    pos_target.position.x = msg -> pose.position.z;
+    pos_target.position.y = msg -> pose.position.x;
+    pos_target.position.z = msg -> pose.position.y;
+    cerr << pos_target;
 
-    if(pos_target.orientation.w == 0)
+    if(pos_target.orientation.w == wcat)
     {
         num_count_vision_lost++;
-    }else if(pos_target.orientation.w == 1)
+    }else if(pos_target.orientation.w != 0)
     {
         flag_detected = 1;
         num_count_vision_lost = 0;
+        wcat = pos_target.orientation.w;
     }
 
     if(num_count_vision_lost > count_vision_lost)
@@ -88,7 +94,7 @@ int main(int argc, char **argv)
     //  标志位：   orientation.w 用作标志位 1代表识别到目标 0代表丢失目标
     // 注意这里为了复用程序使用了/vision/target作为话题名字，适用于椭圆、二维码、yolo等视觉算法
     // 故同时只能运行一种视觉识别程序，如果想同时追踪多个目标，这里请修改接口话题的名字
-    ros::Subscriber vision_sub = nh.subscribe<geometry_msgs::Pose>("/vision/target", 10, vision_cb);
+    ros::Subscriber vision_sub = nh.subscribe<geometry_msgs::PoseStamped>("/visp_auto_tracker/object_position", 10, vision_cb);
 
     // 【发布】发送给position_control.cpp的命令
     ros::Publisher command_pub = nh.advertise<px4_command::ControlCommand>("/px4_command/control_command", 10);
@@ -102,15 +108,15 @@ int main(int argc, char **argv)
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>参数读取<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     //追踪算法比例参数
-    nh.param<float>("kpx_track", kpx_track, 1.0);
-    nh.param<float>("kpy_track", kpy_track, 1.0);
-    nh.param<float>("kpz_track", kpz_track, 1.0);
+    nh.param<float>("kpx_track", kpx_track, 0.5);
+    nh.param<float>("kpy_track", kpy_track, 0.5);
+    nh.param<float>("kpz_track", kpz_track, 0.5);
 
     //追踪算法最大追踪速度
     //取决与使用场景，室内或者第一次实验时，建议选小一点
     nh.param<float>("track_max_vel_x", track_max_vel_x, 0.5);
     nh.param<float>("track_max_vel_y", track_max_vel_y, 0.5);
-    nh.param<float>("track_max_vel_z", track_max_vel_z, 0.5);
+    nh.param<float>("track_max_vel_z", track_max_vel_z, 1);
 
     //追踪算法速度死区
     nh.param<float>("track_thres_vel_x", track_thres_vel_x, 0.02);
@@ -129,7 +135,7 @@ int main(int argc, char **argv)
     nh.param<float>("delta_x", delta_x, 1.5);
 
     //追踪距离阈值
-    nh.param<float>("distance_thres", distance_thres, 0.2);
+    nh.param<float>("distance_thres", distance_thres, 0.001);
 
 
     //打印现实检查参数
@@ -152,6 +158,7 @@ int main(int argc, char **argv)
     {
         //回调
         ros::spinOnce();
+        command_pub = nh.advertise<px4_command::ControlCommand>("/px4_command/control_command", 10);
 
         printf_result();
 
@@ -169,6 +176,7 @@ int main(int argc, char **argv)
                 //777 track
                 if (flag_command == 777)
                 {
+                    num_count_vision_lost = 0;
                     Num_StateMachine = 4;
                     break;
                 }
@@ -207,6 +215,7 @@ int main(int argc, char **argv)
                 {
                     Num_StateMachine = 0;
                 }
+                // command_pub.shutdown();
 
             break;
 
@@ -258,7 +267,12 @@ int main(int argc, char **argv)
 
                 //如果 视觉丢失目标 或者 当前与目标距离小于距离阈值
                 //发送悬停指令
-                if(flag_detected == 0 || (distance < distance_thres))
+                if (num_count_vision_lost >= 100)
+                {
+                    Num_StateMachine = 0;
+                    num_count_vision_lost = 0;
+                }
+                else if(flag_detected == 0 || (distance < distance_thres))
                 {
                     Command_Now.Mode = command_to_mavros::Hold;
                 }
@@ -282,8 +296,8 @@ int main(int argc, char **argv)
                     Command_Now.Reference_State.velocity_ref[1] =  - kpy_track * pos_target.position.y;
 
                     //Height is locked.
-                    //Command_Now.Reference_State.velocity_ref[2] =  - kpz_track * pos_target.position.z;
-                    Command_Now.Reference_State.position_ref[2] =  0;
+                    Command_Now.Reference_State.velocity_ref[2] =  kpz_track * pos_target.position.z;
+                    // Command_Now.Reference_State.position_ref[2] =  0;
 
                     //目前航向角锁定
                     Command_Now.Reference_State.yaw_ref = 0;

@@ -189,10 +189,10 @@ int main(int argc, char **argv)
 
     //读取参数表中的参数
     // 使用激光SLAM数据orVicon数据 0 for vision， 1 for 激光SLAM
-    nh.param<int>("pos_estimator/flag_use_laser_or_vicon", flag_use_laser_or_vicon, 0);
+    nh.param<int>("pos_estimator/flag_use_laser_or_vicon", flag_use_laser_or_vicon, 1);
 
     // 0 for use the data from fcu, 1 for use the mocap raw data(only position), 2 for use the mocap raw data(position and velocity)
-    nh.param<float>("pos_estimator/Use_mocap_raw", Use_mocap_raw, 0.0);
+    nh.param<float>("pos_estimator/Use_mocap_raw", Use_mocap_raw, 0);
 
     // window for linear velocity
     nh.param<int>("pos_estimator/linear_window", linear_window, 3);
@@ -244,7 +244,7 @@ int main(int argc, char **argv)
     OptiTrackFeedBackRigidBody UAV("/vrpn_client_node/UAV/pose",nh,linear_window,angular_window);
 
     // 频率
-    ros::Rate rate(100.0);
+    ros::Rate rate(10.0);
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Main Loop<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     while(ros::ok())
